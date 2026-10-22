@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Painel B2B Avançado</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="stage"></div>
+
+  <!-- Diagnóstico: se algo falhar, mostra o motivo na tela em vez de deixar em branco -->
+  <div id="diag" style="display:none;position:fixed;left:12px;right:12px;top:12px;z-index:99;background:#fff3f3;border:2px solid #c00;border-radius:8px;padding:14px;font:15px/1.5 Consolas,monospace;color:#900;white-space:pre-wrap"></div>
+  <script>
+    (function(){
+      var msgs=[];
+      function show(){var d=document.getElementById('diag');d.style.display='block';d.textContent='PROBLEMA ENCONTRADO:\n\n'+msgs.join('\n')}
+      window.addEventListener('error',function(e){
+        var t=e.target;
+        if(t&&(t.src||t.href)) msgs.push('Arquivo NÃO encontrado: '+(t.getAttribute('src')||t.getAttribute('href')));
+        else msgs.push('Erro de JavaScript: '+e.message+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':''));
+        show();
+      },true);
+      window.addEventListener('load',function(){
+        var st=document.getElementById('stage');
+        if(!st.children.length){
+          msgs.push('A página não desenhou nada. Conferência:');
+          msgs.push('  js/assets.js  -> '+(window.ASSETS?'ok':'NÃO carregou ou está vazio'));
+          msgs.push('  config.js     -> '+(window.CONFIG?'ok':'NÃO carregou ou está vazio'));
+          msgs.push('  js/api.js     -> '+(typeof carregarGrupos==='function'?'ok':'NÃO carregou ou está vazio'));
+          msgs.push('  js/app.js     -> '+(typeof route==='function'?'ok':'NÃO carregou ou está vazio'));
+          show();
+        }
+      });
+    })();
+  </script>
+
+  <!-- A ordem importa: imagens -> configuração -> API -> lógica -->
+  <script src="js/assets.js"></script>
+  <script src="config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
